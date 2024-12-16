@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
+import { QueryProductDto } from './dto/query-product.dto';
 
 @Injectable()
 export class ProductsService {
@@ -12,8 +13,14 @@ export class ProductsService {
     private readonly productsRepository: Repository<Product>,
   ) {}
 
-  findAll() {
-    return this.productsRepository.find();
+  findAll(productQuery: QueryProductDto) {
+    return this.productsRepository.find({
+      where: { 
+        name: productQuery.name,
+        priceSubunit: Between(productQuery.price_subunit.gte, productQuery.price_subunit.lte),
+        
+      } 
+    });
   }
 
   findOne(id: number) {
