@@ -10,7 +10,8 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './auth.decorator';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { TokenDto } from './dto/token.dto';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -19,8 +20,9 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('generate_token')
-  async login(@Body() authDto: AuthDto) {
-    return this.authService.login(authDto);
+  @ApiResponse({ status: HttpStatus.CREATED, type: TokenDto })
+  async login(@Body() authDto: AuthDto): Promise<TokenDto> {
+    return this.authService.generateToken(authDto);
   }
 
   @Post('sign_in')
