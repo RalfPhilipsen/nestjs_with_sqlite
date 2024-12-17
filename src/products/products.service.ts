@@ -5,12 +5,16 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { Between, Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { QueryProductDto } from './dto/query-product.dto';
+import { Category } from './entities/category.entity';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productsRepository: Repository<Product>,
+
+    @InjectRepository(Category)
+    private readonly categoriesRepository: Repository<Category>,
   ) {}
 
   findAll(productQuery: QueryProductDto) {
@@ -24,15 +28,16 @@ export class ProductsService {
   }
 
   findOne(id: number) {
-    return this.productsRepository.findOneByOrFail({ id });
+    return this.productsRepository.findOne({ where: { id }, relations: ['categories'] });
   }
 
   create(createProductDto: CreateProductDto) {
     return this.productsRepository.save(createProductDto);
   }
 
-  update(product: Product, updateProductDto: UpdateProductDto) {
-    return this.productsRepository.save({ ...product, ...updateProductDto });
+  async update(product: Product, updateProductDto: UpdateProductDto) {
+    const categories = await this.categoriesRepository.find({ where: updateProductDto.categories.map((id) => ({ id }))});
+    return this.productsRepository.save({ ...product, ...updateProductDto, categories });
   }
 
   remove(product: Product) {

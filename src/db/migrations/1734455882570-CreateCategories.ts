@@ -9,7 +9,7 @@ export class CreateCategories1734455882570 implements MigrationInterface {
               "id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
               "name" varchar NOT NULL,
               "created_at" datetime NOT NULL DEFAULT (datetime('now')),
-              "updated_at" datetime NOT NULL DEFAULT (datetime('now')),
+              "updated_at" datetime NOT NULL DEFAULT (datetime('now'))
             )
         `);
     }

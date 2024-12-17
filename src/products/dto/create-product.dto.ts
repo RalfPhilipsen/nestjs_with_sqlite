@@ -18,4 +18,8 @@ export class CreateProductDto {
   @IsString()
   @Length(3, 3)
   priceCurrency: string;
+
+  @ApiProperty({ example: 1 })
+  @IsInt({ each: true })
+  categories: number[];
 }
