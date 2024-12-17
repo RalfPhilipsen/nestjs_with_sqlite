@@ -47,5 +47,5 @@ export class Product {
     joinColumn: { name: 'productId', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'categoryId', referencedColumnName: 'id' },
   })
-  categories: (Category | number)[]
+  categories: Category[]
 }

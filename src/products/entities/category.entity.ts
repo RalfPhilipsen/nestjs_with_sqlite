@@ -10,7 +10,7 @@ export class Category {
     name: string
 
     @ManyToMany(() => Product, (product: Product) => product.categories)
-    products: (Product | number)[]
+    products: Product[]
 
     @CreateDateColumn()
     createdAt: Date;
