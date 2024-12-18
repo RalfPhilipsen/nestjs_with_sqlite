@@ -2,30 +2,60 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Repository } from 'typeorm';
+import { Between, In, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
+import { QueryProductDto } from './dto/query-product.dto';
+import { Category } from './entities/category.entity';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productsRepository: Repository<Product>,
+
+    @InjectRepository(Category)
+    private readonly categoriesRepository: Repository<Category>,
   ) {}
 
-  findAll() {
-    return this.productsRepository.find();
+  findAll(productQuery: QueryProductDto) {
+    // With all query parameters optional, check if they are defined before adding them to the query.
+    const where: any = {};
+
+    if (productQuery.name !== undefined) {
+      where.name = productQuery.name;
+    }
+
+    if (productQuery.price_subunit) {
+      const { gte, lte } = productQuery.price_subunit;
+      if (gte !== undefined && lte !== undefined) {
+        where.priceSubunit = Between(gte, lte);
+      } else if (gte !== undefined) {
+        where.priceSubunit = MoreThanOrEqual(gte);
+      } else if (lte !== undefined) {
+        where.priceSubunit = LessThanOrEqual(lte);
+      }
+    }
+
+    return this.productsRepository.find({ where });
   }
 
   findOne(id: number) {
-    return this.productsRepository.findOneByOrFail({ id });
+    return this.productsRepository.findOneOrFail({ where: { id }, relations: ['categories'] });
   }
 
   create(createProductDto: CreateProductDto) {
     return this.productsRepository.save(createProductDto);
   }
 
-  update(product: Product, updateProductDto: UpdateProductDto) {
-    return this.productsRepository.save({ ...product, ...updateProductDto });
+  async update(product: Product, updateProductDto: UpdateProductDto) {
+    let categories: Category[] = [];
+    if (updateProductDto.categories) {
+      categories = await this.categoriesRepository.find({ where: { id: In(updateProductDto.categories)} });
+    } else {
+      categories = product.categories;
+    }
+
+    return this.productsRepository.save({ ...product, ...updateProductDto, categories });
   }
 
   remove(product: Product) {

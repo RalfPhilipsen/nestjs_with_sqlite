@@ -60,6 +60,37 @@ describe('AuthController (e2e)', () => {
     });
   });
 
+  describe('POST /generate_token', () => {
+    describe('with valid credentials', () => {
+      beforeEach(async () => {
+        await authService.signUp({
+          username: USER_USERNAME,
+          password: USER_PASSWORD,
+        });
+      });
+
+      it('should return a 200 response with the user', () => {
+        return request(app.getHttpServer())
+          .post('/auth/generate_token')
+          .send({ username: USER_USERNAME, password: USER_PASSWORD })
+          .then(({ statusCode }) => {
+            expect(statusCode).toBe(200);
+          });
+      });
+    });
+
+    describe('with invalid credentials', () => {
+      it('should return a 401 response with an error', () => {
+        return request(app.getHttpServer())
+          .post('/auth/generate_token')
+          .send({ username: USER_USERNAME, password: 'invalid' })
+          .then(({ statusCode }) => {
+            expect(statusCode).toBe(401);
+          });
+      });
+    });
+  });
+
   describe('POST /sign_up', () => {
     describe('with valid credentials', () => {
       it('should return a 201 response with the user', () => {
