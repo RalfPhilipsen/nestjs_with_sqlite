@@ -40,7 +40,7 @@ export class ProductsService {
   }
 
   findOne(id: number) {
-    return this.productsRepository.findOne({ where: { id }, relations: ['categories'] });
+    return this.productsRepository.findOneOrFail({ where: { id }, relations: ['categories'] });
   }
 
   create(createProductDto: CreateProductDto) {
