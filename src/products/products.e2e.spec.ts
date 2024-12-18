@@ -83,4 +83,92 @@ describe('ProductsController (e2e)', () => {
       });
     });
   });
+
+  describe('POST /products', () => {
+    describe('with valid data', () => {
+      it('returns a 201 response with the product', () => {
+        return request(app.getHttpServer())
+          .post('/products')
+          .send({
+            name: 'New Product',
+            description: 'Description for New Product.',
+            priceSubunit: 1000,
+            priceCurrency: 'GBP',
+          })
+          .set({ Authorization: token })
+          .then(({ statusCode }) => {
+            expect(statusCode).toBe(201);
+          });
+      });
+    });
+
+    describe('with invalid data', () => {
+      it('returns a 400 response with an error', () => {
+        return request(app.getHttpServer())
+          .post('/products')
+          .send({ name: 123 })
+          .set({ Authorization: token })
+          .then(({ statusCode }) => {
+            expect(statusCode).toBe(400);
+          });
+      });
+    });
+  });
+
+  describe('PATCH /products', () => {
+    describe('with valid data', () => {
+      it('returns a 200 response with the product', () => {
+        return request(app.getHttpServer())
+          .patch(`/products/${product.id}`)
+          .send({
+            name: 'Updated Product',
+            categories: [1]
+          })
+          .set({ Authorization: token })
+          .then(({ statusCode }) => {
+            expect(statusCode).toBe(200);
+          });
+      });
+    });
+
+    describe('with invalid data', () => {
+      it('returns a 400 response with an error', () => {
+        return request(app.getHttpServer())
+          .patch(`/products/${product.id}`)
+          .send({ name: 123 })
+          .set({ Authorization: token })
+          .then(({ statusCode }) => {
+            expect(statusCode).toBe(400);
+          });
+      });
+    });
+
+    describe('with nonexistent id', () => {
+      it('returns a 404 response', () => {
+        return request(app.getHttpServer())
+          .patch(`/products/1234`)
+          .send({
+            name: 'Updated Product',
+            categories: [1]
+          })
+          .set({ Authorization: token })
+          .then(({ statusCode }) => {
+            expect(statusCode).toBe(404);
+          });
+      });
+    });
+  });
+
+  describe('DELETE /products/{id}', () => {
+    describe('when product with id exists', () => {
+      it('returns a 200 response', () => {
+        return request(app.getHttpServer())
+          .delete(`/products/${product.id}`)
+          .set({ Authorization: token })
+          .then(({ statusCode }) => {
+            expect(statusCode).toBe(200);
+          });
+      });
+    });
+  });
 });

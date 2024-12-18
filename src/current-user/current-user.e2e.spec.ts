@@ -60,4 +60,30 @@ describe('CurrentUserController (e2e)', () => {
       });
     });
   });
+
+  describe('PATCH /current_user', () => {
+    describe('with valid credentials', () => {
+      it('should return a 200 response with the user', () => {
+        return request(app.getHttpServer())
+          .patch('/current_user')
+          .send({ username: 'newusername' })
+          .set({ Authorization: token })
+          .then(({ statusCode }) => {
+            expect(statusCode).toBe(200);
+          });
+      });
+    });
+
+    describe('with invalid credentials', () => {
+      it('should return a 401 response with an error', () => {
+        return request(app.getHttpServer())
+          .patch('/current_user')
+          .send({ username: 'newusername' })
+          .set({ Authorization: 'Bearer somefaultytoken' })
+          .then(({ statusCode }) => {
+            expect(statusCode).toBe(401);
+          });
+      });
+    });
+  });
 });
