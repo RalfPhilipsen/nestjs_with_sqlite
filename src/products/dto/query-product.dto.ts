@@ -1,15 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { QueryPriceSubunitDto } from "./query-price-subunit.dto";
-import { IsNotEmpty, IsString, ValidateNested } from "class-validator";
+import { IsOptional, IsString, ValidateNested } from "class-validator";
 
 export class QueryProductDto {
-    @ApiProperty({ type: String, name: 'name', example: 'product1', required: true })
+    @ApiProperty({ type: String, name: 'name', example: 'product1', required: false })
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     name: string
 
-    @ApiProperty({ type: QueryPriceSubunitDto, required: true })
-    @IsNotEmpty()
+    @ApiProperty({ type: QueryPriceSubunitDto, required: false })
+    @IsOptional()
     @ValidateNested()
     price_subunit: QueryPriceSubunitDto
 }

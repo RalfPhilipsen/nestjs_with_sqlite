@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Between, In, Repository } from 'typeorm';
+import { Between, In, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { QueryProductDto } from './dto/query-product.dto';
 import { Category } from './entities/category.entity';
@@ -18,13 +18,25 @@ export class ProductsService {
   ) {}
 
   findAll(productQuery: QueryProductDto) {
-    return this.productsRepository.find({
-      where: { 
-        name: productQuery.name,
-        priceSubunit: Between(productQuery.price_subunit.gte, productQuery.price_subunit.lte),
-        
-      } 
-    });
+    // With all query parameters optional, check if they are defined before adding them to the query.
+    const where: any = {};
+
+    if (productQuery.name !== undefined) {
+      where.name = productQuery.name;
+    }
+
+    if (productQuery.price_subunit) {
+      const { gte, lte } = productQuery.price_subunit;
+      if (gte !== undefined && lte !== undefined) {
+        where.priceSubunit = Between(gte, lte);
+      } else if (gte !== undefined) {
+        where.priceSubunit = MoreThanOrEqual(gte);
+      } else if (lte !== undefined) {
+        where.priceSubunit = LessThanOrEqual(lte);
+      }
+    }
+
+    return this.productsRepository.find({ where });
   }
 
   findOne(id: number) {
