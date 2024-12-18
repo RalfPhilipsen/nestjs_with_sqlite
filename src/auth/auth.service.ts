@@ -5,6 +5,7 @@ import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 import { AuthDto } from './dto/auth.dto';
 import { TokenDto } from './dto/token.dto';
+import { PayloadDto } from './dto/payload.dto';
 
 const SALT_ROUNDS = 10;
 
@@ -33,7 +34,7 @@ export class AuthService {
 
   async generateToken(authDto: AuthDto): Promise<TokenDto> {
     const user = await this.validateUser(authDto.username, authDto.password);
-    const payload = { username: user.username, userId: user.id };
+    const payload: PayloadDto = { username: user.username, userId: user.id };
     return {
       accessToken: this.jwtService.sign(payload),
     };
