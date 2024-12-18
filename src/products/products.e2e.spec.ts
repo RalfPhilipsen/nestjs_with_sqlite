@@ -49,7 +49,7 @@ describe('ProductsController (e2e)', () => {
     await app.close();
   });
 
-  describe('GET /products', () => {
+  describe('GET /products?name=Test Product&price_subunit[gte]=0&price_subunit[lte]=10001', () => {
     it('returns a 200 response with an array of products', () => {
       return request(app.getHttpServer())
         .get('/products')
