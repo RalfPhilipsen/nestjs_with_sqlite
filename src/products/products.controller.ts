@@ -8,12 +8,10 @@ import {
   Delete,
   UseGuards,
   Query,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { QueryProductDto } from './dto/query-product.dto';
@@ -33,7 +31,6 @@ export class ProductsController {
    */
 
   @Get()
-  @UsePipes(new ValidationPipe({ transform: true, transformOptions: { enableImplicitConversion: true }  }))
   index(@Query() productQuery: QueryProductDto) {
     return this.productsService.findAll(productQuery);
   }
