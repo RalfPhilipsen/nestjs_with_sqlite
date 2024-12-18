@@ -20,7 +20,8 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('generate_token')
-  @ApiResponse({ status: HttpStatus.CREATED, type: TokenDto })
+  @ApiResponse({ status: HttpStatus.OK, type: TokenDto })
+  @HttpCode(HttpStatus.OK)
   async login(@Body() authDto: AuthDto): Promise<TokenDto> {
     return this.authService.generateToken(authDto);
   }
